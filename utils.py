@@ -5,20 +5,25 @@ def gather_stats(state_dict):
     dtype_counter = Counter()
     num_params = 0
     num_tensors = len(state_dict)
+    device = None
 
     for tensor in state_dict.values():
         dtype_counter[str(tensor.dtype)] += 1
         num_params += tensor.numel()
+        if device is None:
+            device = tensor.device
 
     return {
         "dtype_counter": dtype_counter,
         "num_params": num_params,
         "num_tensors": num_tensors,
+        "device": device,
     }
 
 
 def print_stats(stats, rank_info=""):
     print(f"{rank_info}")
+    print(f"Device: {stats['device']}")
     print(f"Number of tensors: {stats['num_tensors']:,}")
     print(f"Number of parameters: {stats['num_params']:,}")
     print("Dtype distribution:")
@@ -41,9 +46,13 @@ def aggregate_stats(stats_list):
         "dtype_counter": Counter(),
         "num_params": 0,
         "num_tensors": 0,
+        "device": set(),
     }
     for stats in stats_list:
         aggregated["dtype_counter"] += stats["dtype_counter"]
         aggregated["num_params"] += stats["num_params"]
         aggregated["num_tensors"] += stats["num_tensors"]
+        aggregated["device"].add(str(stats["device"]))
+    
+    aggregated["device"] = ", ".join(sorted(aggregated["device"]))
     return aggregated
