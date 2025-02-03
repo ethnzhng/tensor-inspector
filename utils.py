@@ -53,6 +53,6 @@ def aggregate_stats(stats_list):
         aggregated["num_params"] += stats["num_params"]
         aggregated["num_tensors"] += stats["num_tensors"]
         aggregated["device"].add(str(stats["device"]))
-    
+
     aggregated["device"] = ", ".join(sorted(aggregated["device"]))
     return aggregated

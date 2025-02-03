@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 from collections import OrderedDict
 
 import torch
@@ -10,6 +9,10 @@ from vllm.distributed import get_pp_group, get_tensor_model_parallel_rank
 from vllm.worker.worker import Worker
 
 from utils import aggregate_stats, gather_stats, print_stats
+
+import torch._dynamo
+
+torch._dynamo.config.suppress_errors = True
 
 
 def get_pipeline_model_parallel_rank():
