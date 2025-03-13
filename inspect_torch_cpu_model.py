@@ -4,9 +4,7 @@ import argparse
 import json
 import os
 from collections import OrderedDict
-
 from safetensors import safe_open
-
 from utils import gather_stats, print_stats
 
 

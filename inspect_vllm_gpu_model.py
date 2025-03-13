@@ -2,17 +2,15 @@
 
 import argparse
 from collections import OrderedDict
-
 import torch
 from vllm import LLM
 from vllm.distributed import get_pp_group, get_tensor_model_parallel_rank
 from vllm.worker.worker import Worker
-
+import logging
 from utils import aggregate_stats, gather_stats, print_stats
 
-import torch._dynamo
 
-torch._dynamo.config.suppress_errors = True
+logging.getLogger("vllm").setLevel(logging.ERROR)
 
 
 def get_pipeline_model_parallel_rank():
@@ -37,8 +35,10 @@ def load_vllm_model(model_path, tp_degree, pp_degree):
         tensor_parallel_size=tp_degree,
         pipeline_parallel_size=pp_degree,
         distributed_executor_backend="mp",
-        gpu_memory_utilization=0.9,
-        max_model_len=8192,
+        gpu_memory_utilization=0.95,
+        skip_tokenizer_init=True,
+        max_model_len=128,
+        max_num_seqs=1,
         enforce_eager=True,
         disable_custom_all_reduce=True,
     )
